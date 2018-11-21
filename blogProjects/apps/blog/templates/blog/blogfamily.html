@@ -1,0 +1,35 @@
+{% extends 'blog/base_index.html' %}
+{% block body_content %}
+    <div class="col-sm-9">
+{#        {% for p in p_tutorial %}#}
+            <div class="clearfix">
+{#                <div class="blog-cat-title" style="padding-top: 15px;">#}
+{#                    {{ p.name }}#}
+{#                </div>#}
+                {% for s in s_tutorial %}
+{#                    {% if s.parent %}#}
+                        <div class="col-sm-4">
+                            <div class="blog-family-panel hoverable" style="height:340px;background-color:#FFFFFF;">
+                                <a href="{% url 'blogDetail' s.parent.url_slug s.url_slug   %}" style="color:#000">
+                                    <div class="">
+                                        <img class="" src="{{ MEDIA_URL }}{{ s.image }}" style="width:90%;height:160px">
+                                        <br>
+                                        <span class="blog-family-title"><strong>{{ s.name }}</strong></span>
+                                    </div>
+                                    <div class="blog-family-content">
+                                        <p>{{ s.desc  | slice:':50' }}......</p>
+                                    </div>
+                                </a>
+                                <div class="pull-right" style="    position: absolute;
+    top: 88%;
+    left: 75%;">
+                                    <a href="{% url 'blogDetail' s.parent.url_slug s.url_slug   %}" class="btn btn-danger">View</a>
+                                </div>
+                            </div>
+                        </div>
+{#                    {% endif %}#}
+                {% endfor %}
+            </div>
+{#        {% endfor %}#}
+    </div>
+{% endblock %}

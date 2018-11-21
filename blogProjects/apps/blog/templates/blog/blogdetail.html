@@ -1,0 +1,321 @@
+
+{% extends 'blog/detailbase.html' %}
+{% load cache %}
+{% block body_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3">
+                <form action="{% url 'search' %}" id="search-form">
+                    <div class="input-group">
+                        <input type="search" name="q" class="form-control ">
+                        <span class="input-group-addon btn btn-default" onclick="$('#search-form').submit()"><i
+                                class="glyphicon glyphicon-search"> <span>搜索</span></i></span>
+                    </div>
+                </form>
+                <div class="chapter clearfix">
+                    <div class="chapter-title clearfix">
+                    <span style="font-size:16px;font-weight:bold;">
+					章节目录
+                    </span>
+                        <div class="chapSpandM pull-right" id="minus" onclick="toggleAll(this)">
+                            <span class="glyphicon 	glyphicon glyphicon-resize-small pull-right"
+                                  onselectstart="return false"
+                                  style="cursor:Pointer"></span>
+                        </div>
+                        <div class="chapSpandM pull-right" id="plus" onclick="toggleAll(this)">
+                            <span class="glyphicon glyphicon glyphicon-resize-full pull-right"
+                                  onselectstart="return false"
+                                  style="cursor:Pointer;"></span>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        {% for i in chapter %}
+                            <div>
+                                {% if i.blogsequence|divisibleby:100 %}
+                                    <div class="chapSpand" id="{% widthratio i.blogsequence 100 1 %}" expand="False"
+                                         onclick="toggleChapter(this)">
+                                        <span class="glyphicon glyphicon-plus-sign" onselectstart="return false"></span>
+                                    </div>
+                                    <a class="chapter-m  {% ifequal blog.title i.title %} chapactive{% endifequal %}"
+                                       id="{% widthratio i.blogsequence 100 1 %}"
+                                       href="{% url 'blogDetail' i.category.parent.url_slug i.category.url_slug %}?blog={{ i.url_slug }}">{{ i.title }}</a>
+                                {% else %}
+                                    <a class="chapter-s  {% ifequal blog.title i.title %} chapactive{% endifequal %}" style="{% ifequal blog.title i.title %}display:inline-block;{% endifequal %}"
+                                       id="{% widthratio i.blogsequence 100 1 %}"
+                                       href="{% url 'blogDetail' i.category.parent.url_slug i.category.url_slug %}?blog={{ i.url_slug }}">{{ i.title }}</a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9" id="blogandcomment">
+            {% cache 86400 blogdetail %}
+                <div class="blog-content-block">
+                    <h1 class="news-title">{{ blog.title }}</h1>
+                    <div class="news-status"> {{ blog.views }}阅读·{{ blog.created_time }}发布
+
+                    </div>
+                    <hr style="height:1px;border:none;border-top:1px dashed #c12812;">
+                    <div class="news-content">
+                        <blockquote>
+                            <p>
+                                {{ blog.desc }}
+                            </p>
+                        </blockquote>
+                        <div>
+                            {% autoescape off %}
+                                {{ blog.body }}
+                            {% endautoescape %}
+                        </div>
+
+                    </div>
+                    <hr style="height:1px;border:none;border-top:1px dashed #c12812;">
+                </div>
+            {% endcache %}
+
+                <div class="blog-comments-margin">
+                    {% load comments %}
+                    {% load threadedcomments_tags %}
+                    {% get_comment_count for blog as comment_count %}
+                    {% if user.is_authenticated %}
+                        {% get_comment_form for blog as form %}
+                        <div class=".comment-block">
+                            <div style="font-size:20px;font-weight:bold;padding-bottom:20px;">
+                                <span style="font-size:20px;font-weight:bold;padding-bottom:20px;">{{ comment_count }}条评论</span><span
+                                    style="font-size:20px;font-weight:bold;padding-bottom:20px;">(评论由新到老展示)</span>
+                            </div>
+                            <div class="comment-editor">
+                                <div id="form-comment">
+                                    <form action="{% comment_form_target %}" method="POST" style="padding-bottom: 50px">
+                                        {% csrf_token %}
+                                        <div class="simditor-wrapper" style="padding-right: 20px">
+                                            <textarea style="width:100%;" name="comment" id="id_comment"
+                                                      maxlength="3000" required=""></textarea>
+                                            <button type="submit" class="btn  btn-default pull-right" id="id_submit">
+                                                <span class="glyphicon glyphicon-paperclip"
+                                                      style="cursor:Pointer">发布评论</span>
+                                            </button>
+                                            <button type="submit" class="btn  btn-default pull-right" id="cancel_reply">
+                                                <span class="glyphicon glyphicon-paperclip"
+                                                      style="cursor:Pointer">取消评论</span>
+                                            </button>
+                                        </div>
+                                        {{ form.parent }}
+                                        {{ form.honeypot }}
+                                        {{ form.content_type }}
+                                        {{ form.object_pk }}
+                                        {{ form.timestamp }}
+                                        {{ form.security_hash }}
+
+                                        {#                                <input type="hidden" name="next"#}
+                                        {#                                       value="{% url 'blogDetail' blog.category.name blog.id %}"/>#}
+                                        <input type='hidden' name='next' value='{% url "showcomment" blog.id %}'/>
+                                    </form>
+
+                                    <iframe id="is_iframe" name="the_iframe" style="display:none;"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="side-bar-card text-center clearfix login-tips">
+                            <div class="side-bar-center">登录后可以保存您的浏览喜好、评论、收藏,并与APP同步更可以发布微头条
+{#                                <div class="side-bar-center">#}
+{#                                    <a class="btn btn-primary" href="">点击登陆</a>#}
+{#                                </div>#}
+                                {% load socialaccount %}
+            {% get_providers as socialaccount_providers %}
+            {% for provider in socialaccount_providers %}
+                                <div class="side-bar-center">
+{#                                    <a href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}" class="side-bar-icon"></a>#}
+
+                <form  method="POST" class="" action="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+                {% csrf_token %}
+                     <button type="submit"  class="btn btn-default sign-in-github side-bar-icon"
+                            style="border:none;outline:none; box-shadow:none;margin:0px">
+                    </button>
+                    <input type="hidden" name="next" value="{{ request.path }}"/>
+                </form>
+                </div>
+            {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="comment-outer" style="padding-top:40px">
+                        <!-展示评论和回复评论，有层级-->
+                        {% get_comment_list for blog as comment_list %}
+                        {% for comment in comment_list|fill_tree|annotate_tree %}
+                            <div class="comment-detail {% if  comment.parent_id %}comment-padding{% endif %} clearfix">
+                                <div class="comment-photo "  >
+                                    <a class="pull-left " style="padding-right:10px" href="#">
+                                        <img class="media-object"
+                                             src="{{ comment.user.socialaccount_set.all.0.get_avatar_url }}" alt=""
+                                             style="width:48px;margin: 0 auto;">
+                                        <span style="text-align: center;">{{ comment.user }}</span>
+                                    </a>
+                                </div>
+                                <div class="comment-wrapper ">
+                                    {{ comment.user_name }}
+                                    {% if comment.parent %}
+                                            <span class="glyphicon glyphicon-chevron-right" style="padding-right: 8px;font-size:15px;"></span>
+                                    {% endif %}
+                                    {{ comment.parent.user_name }}
+                                    {#                                            #}
+                                    {#                                                    {{ comment.open }}---++#}
+                                    {#                                                    {{ comment.close }}---++#}
+                                    {#                                                    {{ comment.last }}---++#}
+                                    {#                                                    {{ comment.parent_id }}---++#}
+                                    <div class="comment-reply">
+                                        {% autoescape off %}
+                                            {{ comment.comment }}
+                                        {% endautoescape %}
+                                    </div>
+                                    <div>
+                                        {{ comment.submit_date|date:"d M Y, H:i" }}
+                                        | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}"
+                                             class="comment_reply_link">Reply</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <hr style="height:1px;">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block main_js %}
+    <script>
+        {#$(".chapter-s,.chapter-m").each(function () {#}
+        {#        $(this).click(#}
+        {#            function (event) {#}
+        {#                event.preventDefault();#}
+        {#                main_slug = $(this).attr("href").split("/")[1];#}
+        {#                son_slug = $(this).attr("href").split("/")[2];#}
+        {#                blog_slug=$(this).attr("href").split(/[?=]/)[2];#}
+        {#                getblog(main_slug,son_slug,blog_slug);#}
+        {##}
+        {#                $(".chapter-s").each(function () {#}
+        {#                    $(this).removeClass("chapactive")#}
+        {#                });#}
+        {#                $(".chapter-m").each(function () {#}
+        {#                    $(this).removeClass("chapactive")#}
+        {#                });#}
+        {#                $(this).addClass("chapactive")#}
+        {#            })#}
+        {#    }#}
+        {#);#}
+
+        function getblog(main_slug, son_slug, blog_slug) {
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    var csrftoken = $.cookie('csrftoken');
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            });
+            $.ajax({
+                type: "POST",
+                data: {'blog': blog_slug},
+                url: "/" + main_slug + "/" + son_slug + "/",
+                success: function (data) {
+                    $("#blogandcomment").html(data);
+                    {#new_url = document.URL.replace("?", "#");#}
+                    {#document.location = new_url; #}
+                }
+            })
+        };
+        jQuery(function ($) {
+            function show_reply_form(event) {
+                var $this = $(this);
+                var comment_id = $this.data('comment-id');
+
+                $('#id_parent').val(comment_id);
+                $('#form-comment').appendTo($this.closest('.comment-detail'));
+                {#$('#form-comment').appendTo($this);#}
+            };
+
+            function cancel_reply_form(event) {
+                {#$("#id_comment").innerHTML="";#}
+                $('#form-comment').appendTo($('.comment-editor'));
+                {#$('#id_comment').val('');#}
+                {#$('#id_parent').val('');#}
+                {#$('.simditor-body').empty();#}
+                {#$('#editor').append($('.simditor-body').html("<p >请输入你的留言...</p>"));#}
+                {#$(".simditor-placeholder").val();#}
+                {#$('.simditor-placeholder')[0].innerHTML="请输入你的留言...";#}
+                initEditor();
+            }
+
+            $.fn.ready(function () {
+                $('.comment_reply_link').on("click", show_reply_form);
+                $('#cancel_reply').on("click", cancel_reply_form);
+            })
+        });
+
+        function commentFormHandler() {
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    var csrftoken = $.cookie('csrftoken');
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            });
+            $('#form-comment form').submit(function () {
+                $.ajax({
+                    type: "POST",
+                    data: $('#form-comment form').serialize(),
+                    url: "{% comment_form_target %}",
+                    cache: false,
+                    dataType: "html",
+                    success: function (html, textStatus) {
+                        {#$('.simditor-body').empty();#}
+                        {#$('#editor').append($('.simditor-body').html("<p >请输入你的留言...</p>"));#}
+                        initEditor();
+                        $('#form-comment').appendTo($('.comment-editor'));
+                        comment = $("#id_comment").val();
+                        {#$(".comment-outer").prepend();#}
+                        {#alert(comment);#}
+                        {#alert($("#id_parent").val());#}
+                        {# alert($("#id_timestamp").val());#}
+                        {# alert("{{ request.user.username }}");#}
+                        {# alert("{{ form.comment }}");#}
+                        {#$(".comment-outer").prepend(comment);#}
+                        {#window.location.reload();#}
+                        $(".comment-outer").replaceWith(html)
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $('#form-comment form').replaceWith('Your comment was unable to be posted at this time.  We apologise for the inconvenience.');
+                    }
+                });
+                return false;
+            });
+        };
+        var current_param=window.location.search;
+             current_chp = $($("[href$='" + current_param + "']"))[0];
+            // current_pchap=$("[id='1'][class='chapSpand']")[0];
+            current_pchap = $("[id='" + current_chp.id + "'][class='chapSpand']")[0];
+            toggleChapter(current_pchap);
+
+
+            $(window).scroll(function () {
+                if ($(window).scrollTop() > 120) {
+                    $("#back-to-top").fadeIn(350);
+                }
+                else {
+                    $("#back-to-top").fadeOut(350);
+                }
+            });
+            //当点击跳转链接后,回到页面顶部位置
+            $("#back-to-top").click(function () {
+                $('body,html').animate({scrollTop: 0}, 500);
+                return false;
+            });
+        $(document).ready(function () {
+            commentFormHandler();
+
+        });
+
+    </script>
+{% endblock %}

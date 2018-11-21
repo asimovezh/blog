@@ -1,0 +1,138 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}全栈笔记{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="icon" href="{% static 'images/dragon.jpg' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="{% static 'js/jquery.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/main.js' %}" type="text/javascript"></script>
+</head>
+<body style="padding-top:100px">
+<div><span><p id="back-to-top"><a href="#top"><span></span></a></p></span></div>
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar-nav">
+        <a href="/" class="navbar-brand" ></a>
+    </div>
+    <label id="toggle-label" class="visible-xs inline-block" for="toggle-checkbox">MENU</label>
+    <input class="hidden" id="toggle-checkbox" type="checkbox">
+    <div class="hidden-xs">
+        <ul class="nav navbar-nav">
+            {% for index_list in index_lists %}
+                {% for i in p_tutorial %}
+                {% ifequal index_list.url_slug i.url_slug %}
+                    <li><a   style="background-color: #dddddd" href="{% url 'blogFamily' index_list.url_slug %}">{{ index_list }}</a></li>
+                   {% else %}
+                    <li><a   href="{% url 'blogFamily' index_list.url_slug %}">{{ index_list }}</a></li>
+                   {% endifequal %}
+                {% endfor %}
+            {% endfor %}
+        </ul>
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'account_logout' %}" class="navbar-form navbar-right">
+                {% csrf_token %}
+                你好:{{ user|truncatechars:'12' }}
+                <button type="submit" class="btn btn-default "><span
+                        class="glyphicon glyphicon-log-out"></span> 登出
+                </button>
+            <input type="hidden" name="next" value="{{ request.path }}"/>
+            </form>
+
+        {% elif not user.is_authenticated %}
+            {% load socialaccount %}
+            {% get_providers as socialaccount_providers %}
+            {% for provider in socialaccount_providers %}
+                <form  method="POST" class="navbar-form navbar-right" action="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+                {% csrf_token %}
+{#                  <button type="submit" class="btn btn-default "><span#}
+{#                        class="glyphicon glyphicon-log-out"></span> 登录#}
+{#                </button>#}
+                     <button type="submit"  class="btn btn-default navbar-btn pull-right sign-in-github "
+                            style="border:none;outline:none; box-shadow:none;margin:0px">
+                        Sign In
+                    </button>
+                    <input type="hidden" name="next" value="{{ request.path }}"/>
+            </form>
+            {% endfor %}
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div><span><p id="back-to-top"><a href="#top"><span></span></a></p></span></div>
+        {% block body_content %}
+        {% endblock %}
+        <div class="col-sm-3">
+            <form action="{% url 'search' %}" id="search-form">
+                <div class="input-group">
+                    <input type="search" name="q" class="form-control ">
+                    <span class="input-group-addon btn btn-default" onclick="$('#search-form').submit()"><i
+                            class="glyphicon glyphicon-search"> <span>搜索</span></i></span>
+                </div>
+            </form>
+            <div class="side-bar-card clearfix">
+                <div class="col-xs-12 side-self-desc">
+                    <img src="{% static 'images/dragon.jpg' %}" style="margin: 0 auto;">
+                    <span style="text-align: center;display:block">猪突鲁直</span>
+                    <span style="text-align: center;display:block">不会编程的测试不是一个好交付！  </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <p>Since:2018-09-15 </p>
+    <p>网络笔记，好好学习，天天向上！</p>
+</div>
+{% block main_js %}
+{% endblock %}
+<script>
+    $(function () {
+        //当滚动条的位置处于距顶部100像素以下时,跳转链接出现,否则消失
+        $(function () {
+            $(window).scroll(function () {
+                if ($(window).scrollTop() > 120) {
+                    $("#back-to-top").fadeIn(350);
+                }
+                else {
+                    $("#back-to-top").fadeOut(350);
+                }
+            });
+            //当点击跳转链接后,回到页面顶部位置
+            $("#back-to-top").click(function () {
+                $('body,html').animate({scrollTop: 0}, 500);
+                return false;
+            });
+        });
+    });
+    $(window).scroll(function () {
+                if ($(window).scrollTop() > 120) {
+                    $("#back-to-top").fadeIn(350);
+                }
+                else {
+                    $("#back-to-top").fadeOut(350);
+                }
+            });
+            //当点击跳转链接后,回到页面顶部位置
+            $("#back-to-top").click(function () {
+                $('body,html').animate({scrollTop: 0}, 500);
+                return false;
+            });
+</script>
+</body>
+<html>
+
+
+
+
+
+
+
+

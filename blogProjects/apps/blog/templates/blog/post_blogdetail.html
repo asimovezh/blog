@@ -1,0 +1,201 @@
+<div class="blog-content-block">
+    <h1 class="news-title">{{ blog.title }}</h1>
+    <div class="news-status"> {{ blog.views }}阅读·{{ blog.created_time }}发布
+
+    </div>
+    <hr style="height:1px;border:none;border-top:1px dashed #c12812;">
+    <div class="news-content">
+        <blockquote>
+            <p>
+                {{ blog.desc }}
+            </p>
+        </blockquote>
+        <div>
+            {% autoescape off %}
+                {{ blog.body }}
+            {% endautoescape %}
+        </div>
+        <img src="../../../../static/images/dragon.jpg" alt="">
+    </div>
+    <hr style="height:1px;border:none;border-top:1px dashed #c12812;">
+</div>
+<div class="blog-comments-margin">
+    {% load comments %}
+    {% load threadedcomments_tags %}
+    {% get_comment_count for blog as comment_count %}
+    {% if user.is_authenticated %}
+        {% get_comment_form for blog as form %}
+        <div class=".comment-block">
+            <div style="font-size:20px;font-weight:bold;padding-bottom:20px;">
+                <span style="font-size:20px;font-weight:bold;padding-bottom:20px;">{{ comment_count }}条评论</span><span
+                    style="font-size:20px;font-weight:bold;padding-bottom:20px;">(评论由新到老展示)</span>
+            </div>
+            <div class="comment-editor">
+                <div id="form-comment">
+                    <form action="{% comment_form_target %}" method="POST" style="padding-bottom: 50px">
+                        {% csrf_token %}
+                        <div class="simditor-wrapper" style="padding-right: 20px">
+                            <textarea style="width:100%;" name="comment" id="id_comment" maxlength="3000" required=""
+                                      autofocus></textarea>
+
+                            <button type="submit" class="btn  btn-default pull-right" id="id_submit">
+                                                <span class="glyphicon glyphicon-paperclip"
+                                                      style="cursor:Pointer">发布评论</span>
+                            </button>
+                            <button type="submit" class="btn  btn-default pull-right" id="cancel_reply">
+                                                <span class="glyphicon glyphicon-paperclip"
+                                                      style="cursor:Pointer">取消评论</span>
+                            </button>
+                        </div>
+                        {{ form.parent }}
+                        {{ form.honeypot }}
+                        {{ form.content_type }}
+                        {{ form.object_pk }}
+                        {{ form.timestamp }}
+                        {{ form.security_hash }}
+                        {#                                <input type="hidden" name="next"#}
+                        {#                                       value="{% url 'blogDetail' blog.category.name blog.id %}"/>#}
+                        <input type='hidden' name='next' value='{% url "showcomment" blog.id %}'/>
+                    </form>
+
+                    <iframe id="is_iframe" name="the_iframe" style="display:none;"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="comment-outer" style="padding-top:40px">
+            <!-展示评论和回复评论，有层级-->
+            {% get_comment_list for blog as comment_list %}
+            {% for comment in comment_list|fill_tree|annotate_tree %}
+                <div class="comment-detail {% if  comment.parent_id %}comment-padding{% endif %} clearfix">
+                    <div class="comment-photo ">
+                        <a class="pull-left " style="padding-right:10px" href="#">
+                            <img class="media-object" src="http://placehold.it/32x32" alt=""
+                                 style="width:35px">
+                        </a>
+                    </div>
+                    <div class="comment-wrapper ">
+                        {{ comment.user_name }}
+                        {% if comment.parent %}
+                            <span class=" glyphicon glyphicon-heart" style="padding-right: 8px;"></span>
+                        {% endif %}
+                        {{ comment.parent.user_name }}
+                        {#                                            #}
+                        {#                                                    {{ comment.open }}---++#}
+                        {#                                                    {{ comment.close }}---++#}
+                        {#                                                    {{ comment.last }}---++#}
+                        {#                                                    {{ comment.parent_id }}---++#}
+                        <div class="comment-reply">
+                            {% autoescape off %}
+                                {{ comment.comment }}
+                            {% endautoescape %}
+                        </div>
+                        <div>
+                            {{ comment.submit_date|date:"d M Y, H:i" }}
+                            | <a href="#c{{ comment.id }}" data-comment-id="{{ comment.id }}"
+                                 class="comment_reply_link">Reply</a>
+                        </div>
+                    </div>
+                </div>
+                <hr style="height:1px;">
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="side-bar-card text-center clearfix login-tips">
+            <div class="side-bar-center">登录后可以保存您的浏览喜好、评论、收藏,并与APP同步更可以发布微头条
+                <div class="side-bar-center">
+                    <a class="btn btn-primary" href="">点击登陆</a>
+                </div>
+                <div class="side-bar-center">
+                    <a href="#" class="side-bar-icon"></a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<script>
+    jQuery(function ($) {
+        function show_reply_form(event) {
+            var $this = $(this);
+            var comment_id = $this.data('comment-id');
+            $('#id_parent').val(comment_id);
+            $('#form-comment').appendTo($this.closest('.comment-detail'));
+            {#$('#form-comment').appendTo($this);#}
+        };
+
+        function cancel_reply_form(event) {
+            {#$("#id_comment").innerHTML="";#}
+            $('#form-comment').appendTo($('.comment-editor'));
+            {#$('#id_comment').val('');#}
+            {#$('#id_parent').val('');#}
+            {#$('.simditor-body').empty();#}
+            {#$('#editor').append($('.simditor-body').html("<p >请输入你的留言...</p>"));#}
+            {#$(".simditor-placeholder").val();#}
+            {# $('.simditor-placeholder')[0].innerHTML="请输入你的留言...";#}
+            initEditor();
+        }
+
+        $.fn.ready(function () {
+            $('.comment_reply_link').on("click", show_reply_form);
+            $('#cancel_reply').on("click", cancel_reply_form);
+        })
+    });
+
+    function commentFormHandler() {
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                var csrftoken = $.cookie('csrftoken');
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        });
+        $('#form-comment form').submit(function () {
+            $.ajax({
+                type: "POST",
+                data: $('#form-comment form').serialize(),
+                url: "{% comment_form_target %}",
+                cache: false,
+                dataType: "html",
+                success: function (html, textStatus) {
+                    {#$('.simditor-body').empty();#}
+                    {#$('#editor').append($('.simditor-body').html("<p >请输入你的留言...</p>"));#}
+                    {#$('.simditor-placeholder')[0].innerHTML="请输入你的留言...";#}
+                    initEditor();
+                    $('#form-comment').appendTo($('.comment-editor'));
+                    comment = $("#id_comment").val();
+                    {#$(".comment-outer").prepend();#}
+                    {#alert(comment);#}
+                    {#alert($("#id_parent").val());#}
+                    {# alert($("#id_timestamp").val());#}
+                    {# alert("{{ request.user.username }}");#}
+                    {# alert("{{ form.comment }}");#}
+                    {#$(".comment-outer").prepend(comment);#}
+                    {#window.location.reload();#}
+                    $(".comment-outer").replaceWith(html)
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    $('#form-comment form').replaceWith('Your comment was unable to be posted at this time.  We apologise for the inconvenience.');
+                }
+            });
+            return false;
+        });
+    };
+    $(document).ready(function () {
+        commentFormHandler();
+    });
+    (function () {
+        $(function () {
+            var editor, toolbar;
+            Simditor.locale = 'zh-CN';
+            toolbar = ['title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment'];
+            editor = new Simditor({
+                textarea: $('#id_comment'),
+                placeholder: '请输入你的留言...',
+                toolbar: toolbar,
+                pasteImage: true,
+                defaultImage: 'http://127.0.0.1:8000/media/category/2018/08/django.jpg',
+                upload: true,
+            });
+        });
+    }).call(this);
+</script>
+

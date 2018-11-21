@@ -1,0 +1,74 @@
+{% extends 'blog/base_index.html' %}
+{% block body_content %}
+    <div class="col-sm-9">
+        <div id="showlist">
+        </div>
+        <div class="blog-cat-title clearfix">
+            推荐笔记
+        </div>
+        <div class="blog-list-block clearfix">
+            {% for tutorial in displayd_tutorial %}
+                <a href="{% url 'blogDetail' tutorial.parent.url_slug tutorial.url_slug   %}">
+                <div class="news-list-item clearfix" style="height:180px;background-color:#FFFFFF;">
+                    <div class="col-xs-5 clearfix">
+                        <a href="{% url 'blogDetail' tutorial.parent.url_slug tutorial.url_slug   %}"><img src="{{ MEDIA_URL }}{{ tutorial.image }}"
+                                                 style="width:80%;height:140px"/> </a>
+                    </div>
+                    <div class="col-xs-7 clearfix">
+                        <a href="{% url 'blogDetail' tutorial.parent.url_slug tutorial.url_slug   %}" class="title">{{ tutorial.name }} </a>
+                        <div class="info clearfix">
+                            <span class="content">{{ tutorial.desc }} </span>
+                            <span style="float:left">
+                            {% if tutorial.is_finished %}
+                                已完成
+                            {% else %}
+                                整理中
+                            {% endif %}
+                        </span>
+                            <span>
+                            *浏览数：{{ tutorial.views }}
+                        </span>
+                            <div class="pull-right"><a class=" btn btn-danger btn-sm" href="{% url 'blogDetail' tutorial.parent.url_slug tutorial.url_slug   %}">继续阅读</a></div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </a>
+        </div>
+    </div>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+{% block main_js %}
+    <script>
+
+        $(document).ready(
+            getlist(1)
+        );
+
+
+        function getlist(page, cate) {
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    var csrftoken = $.cookie('csrftoken');
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            });
+            $.ajax({
+                type: "POST",
+                url: "/", data: {"page": page, "cate": cate},
+                success: function (data) {
+                    $("#showlist").html(data);
+                }
+            })
+
+        };
+    </script>
+{% endblock %}

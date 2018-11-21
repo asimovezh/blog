@@ -1,0 +1,331 @@
+.container-fluid{
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.row{
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+a:hover{
+	text-decoration: none;
+}
+
+img{
+	display: block;
+	max-width: 100%;
+	border-radius: 3px;
+}
+
+.navbar-default{
+	background-color: #eee;
+}
+
+.navbar-brand{
+	background-image: url(../images/dragon.png);
+	width:50px;
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+
+
+/*这里显示当前位置  全栈笔记>> Python进阶 >> 性能*/
+.blog-href{
+	font-size: 16px;
+	padding-top: 10px;
+	padding-bottom: 0px;
+	padding-left:15px;
+	background-color: #fff;
+}
+
+.fixed-top-2{
+	margin-top: 50px;
+}
+
+/*这里是主页红色的小竖线图标和后面的  推荐笔记  最新*/
+
+.blog-cat-title{
+	margin-bottom: 10px !important;
+	padding-bottom:5px;
+	font-size: 22px;
+	line-height: 1.5;
+	border-bottom: 1px solid #aaa;
+}
+
+.blog-hot-title,.blog-hot-item{
+	font-size: 22px;
+}
+
+.blog-cat-title:before,.blog-hot-title:before{
+	content:"";
+	display: inline-block;
+	width:10px;
+	height:22px;
+	margin-right: 10px;
+	vertical-align: middle;
+	background: #dd182b;
+}
+
+/*这里是最新笔记*/
+
+.blog-list-block{
+	margin-bottom: 20px;
+
+}
+
+.news-list-item{
+	padding-top: 20px;
+	padding-bottom: 20px;
+	border-radius:2px;
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+	margin-top: 5px;
+	padding-left: 20px;
+
+}
+.new-list-item:hover{
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+}
+
+.news-list-item-b{
+	padding-top: 20px;
+	padding-bottom: 20px;
+	margin-top:5px;
+	padding-left:20px;
+}
+
+.news-list-item .title{
+	display: block;
+	color: #444;
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 5px;
+	line-height:1.5;
+}
+
+.news-list-item .title:hover{
+	color: #337ab7;
+}
+
+.news-list-item .content{
+	display:block;
+	color:#333;
+	font-size: 14px;
+	margin-bottom: 5px;
+	line-height: 1.5;
+}
+
+.news-list-item .info{
+	color:#888;
+}
+
+.text-left{
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+/*这里是最新文章，热门文章列表*/
+.article-list, .article {
+	background: #fff;
+}
+
+.article-list .item .title,
+.article .title{
+	color:#454545;
+	font-size: 22px;
+	font-weight: 700;
+}
+
+.article-list .item .status,
+.article .status{
+	font-size:13px;
+	color:#ccc;
+}
+
+.article-list .item > *,
+.article > *{
+	margin: 10px 0;
+}
+
+
+/*这里是右侧栏*/
+.side-bar-card{
+	background: #eee;
+	margin-top:15px;
+	padding:20px;
+}
+
+.side-bar-icon{
+	background-image: url(../images/weixin.svg);
+	display:inline-block;
+	width:36px;
+	height:58px;
+	background-repeat: no-repeat;
+	background-size: 100% 36px;
+}
+
+.side-bar-center{
+	padding-top:10px;
+}
+
+.side-self-desc{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+/*这里是博客分类*/
+.blog-family-panel{
+	background:#eee;
+	border-radius: 2px;
+	box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+	margin-top:15px;
+	padding:20px;
+}
+
+.blog-family-panel:hover{
+	box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+	margin-top:15px;	
+}
+
+.blog-family-content{
+	margin-top:5px;
+	font-size:15px;
+	line-height: 1.5;
+}
+
+.blog-family-title{
+	line-height: 1;
+	margin-top: 0px;
+}
+
+/*不知道这是啥*/
+.no-padding-h{
+	padding-left: 0;
+	padding-right:0;
+}
+
+
+.footer{
+	margin-top:20px;
+	padding:50px 0;
+	text-align:center;
+	color:#999;
+}
+
+.container-small{
+	max-width: 500px;
+}
+
+.btn-primary{
+	background-color: #ea0c3c;
+	border-color:#db0d3a;
+}
+
+.btn-primary:hover{
+		background-color: #d50c37;
+	border-color:#d50c37;
+}
+
+#toggle-checkbox:checked ~ div{
+	display: block !important;
+}
+
+#toggle-label{
+	display: inline-block;
+	position: absolute;
+	right: 15px;
+	top:13px;
+	font-size:16px;
+	font-weight: normal;
+	color:#666;
+	display:none;
+}
+
+#toggle-label:hover{
+	color:#333;
+}
+
+/*博文详情页*/
+.detail-index{
+	background-color: #eee;
+	margin-top:30px;
+}
+
+.card-title{
+	text-align: center;
+	font-size: 18px;
+	font-weight: bold;
+	padding-bottom: 0;
+}
+
+.news-title{
+	line-height: 1.3;
+	margin-top: 0px;
+}
+
+.news-status{
+	color: #999;
+}
+
+.news-status .lable{
+	opacity:.8;
+}
+
+.news-content{
+	margin-top:20px;
+	font-size:15px;
+	line-height: 1.5;
+}
+
+.news-content img{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.blog-content-block{
+	padding-left: 20px;
+	padding-right: 20px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+/*评论区*/
+.blog-comments-margin{
+	margin-top:30px;
+}
+
+.blog-comments .login-tips{
+	border:1px solid;
+}
+
+
+/*回到顶部*/
+
+p#back-to-top a:hover{
+	color: #979797;
+}
+
+p#back-to-top a span{
+	background: transparent url(../images/backtop.jpg) no-repeat -25px -290px;
+	border-radius:6px;
+	display: block;
+	height: 164px;
+	width:156px;
+	margin-bottom: 5px;
+	/*使用CSS3中的transition属性给span背景颜色添加渐变效果*/
+	-moz-transition:background 1s;
+	-webkit-transition:background 1s;
+	-o-transition:background 1s;
+	background-size: 100%;
+	background-position: center center;
+}
+
+p#back-to-top a:hover span{
+	background: transparent url(../images/backtop.jpg) no-repeat -25px -290px;
+	background-size: 100%;
+	background-position: center center;
+}
